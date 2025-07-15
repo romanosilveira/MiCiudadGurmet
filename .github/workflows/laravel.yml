@@ -8,7 +8,6 @@ on:
 
 jobs:
   laravel-tests:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -17,19 +16,25 @@ jobs:
         php-version: '8.0'
     - uses: actions/checkout@v4
     - name: Copy .env
-      run: php -r "file_exists('.env') || copy('MiCiudadGourmet/.env.example', '.env');"
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      working-directory: backup
     - name: Install Dependencies
       run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      working-directory: backup
     - name: Generate key
       run: php artisan key:generate
+      working-directory: backup
     - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
+      working-directory: backup
     - name: Create Database
       run: |
         mkdir -p database
         touch database/database.sqlite
+      working-directory: backup
     - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
       env:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
       run: php artisan test
+      working-directory: backup
